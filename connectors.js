@@ -1,3 +1,4 @@
+import _ from 'lodash';
 // Fake word generator
 import faker from 'faker';
 
@@ -5,15 +6,20 @@ import faker from 'faker';
 var id = 0;
 var tags = [];
 for (let i = 0; i < 42; i++) {
-  addTag(faker.random.word());
+  if(Math.random() < .5) {
+    addTag('City', faker.address.city());
+  } else {
+    addTag('Company', faker.company.companyName());
+  }
 }
 
-function addTag(label) {
+function addTag(type, label) {
   return new Promise(resolve => {
     setTimeout(() => {
       let t = {
         id: id++,
-        label
+        label,
+        type,
       };
       tags.push(t);
       resolve(t);
@@ -22,8 +28,11 @@ function addTag(label) {
 }
 
 export default {
-  getTags() {
-    return tags;
+  getTags(type) {
+    return _.filter(tags, tag => tag.type === type);
+  },
+  getRandomTag() {
+    return tags[Math.round(Math.random()*(tags.length - 1))];
   },
   addTag,
 };

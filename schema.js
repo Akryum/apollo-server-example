@@ -4,14 +4,16 @@ export const typeDefs = [`
   type Tag {
     id: Int
     label: String
+    type: String
   }
 
   type Query {
-    tags: [Tag]
+    tags(type: String!): [Tag]
+    randomTag: Tag
   }
 
   type Mutation {
-    addTag(label: String!): Tag
+    addTag(type: String!, label: String!): Tag
   }
 
   schema {
@@ -22,14 +24,17 @@ export const typeDefs = [`
 
 export const resolvers = {
   Query: {
-    tags(root, args, context) {
-      return Tags.getTags();
-    }
+    tags(root, { type }, context) {
+      return Tags.getTags(type);
+    },
+    randomTag(root, args, context) {
+      return Tags.getRandomTag();
+    },
   },
   Mutation: {
-    addTag(root, { label }, context) {
-      console.log(`adding tag '${label}'`);
-      return Tags.addTag(label);
-    }
-  }
+    addTag(root, { type, label }, context) {
+      console.log(`adding ${type} tag '${label}'`);
+      return Tags.addTag(type, label);
+    },
+  },
 };

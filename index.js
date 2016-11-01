@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { apolloExpress, graphiqlExpress } from 'apollo-server';
+import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
 
 import { typeDefs, resolvers } from './schema';
@@ -17,7 +17,7 @@ var app = express();
 
 app.use(cors());
 
-app.use('/graphql', bodyParser.json(), apolloExpress({ schema: jsSchema }));
+app.use('/graphql', bodyParser.json(), graphqlExpress({ schema: jsSchema }));
 
 app.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
