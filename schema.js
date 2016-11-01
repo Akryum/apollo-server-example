@@ -11,8 +11,14 @@ const typeDefs = [`
     type: String
   }
 
+  type TagsPage {
+    tags: [Tag]
+    hasMore: Boolean
+  }
+
   type Query {
     tags(type: String!): [Tag]
+    tagsPage(page: Int!, size: Int!): TagsPage
     randomTag: Tag
   }
 
@@ -35,6 +41,9 @@ const resolvers = {
   Query: {
     tags(root, { type }, context) {
       return Tags.getTags(type);
+    },
+    tagsPage(root, { page, size }, context) {
+      return Tags.getTagsPage(page, size);
     },
     randomTag(root, args, context) {
       return Tags.getRandomTag();

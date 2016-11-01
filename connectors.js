@@ -31,6 +31,14 @@ export default {
   getTags(type) {
     return _.filter(tags, tag => tag.type === type);
   },
+  getTagsPage(page, pageSize) {
+    const start = page * pageSize;
+    const end = start + pageSize;
+    return {
+      tags: tags.slice(start, end),
+      hasMore: end < tags.length,
+    };
+  },
   getRandomTag() {
     return tags[Math.round(Math.random()*(tags.length - 1))];
   },
