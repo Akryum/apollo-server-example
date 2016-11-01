@@ -1,6 +1,10 @@
-import Tags from './connectors';
 
-export const typeDefs = [`
+import { makeExecutableSchema } from 'graphql-tools';
+
+import Tags from './connectors';
+import { pubsub } from './subscriptions';
+
+const typeDefs = [`
   type Tag {
     id: Int
     label: String
@@ -16,13 +20,18 @@ export const typeDefs = [`
     addTag(type: String!, label: String!): Tag
   }
 
+  type Subscription {
+    tagAdded(type: String!): Tag
+  }
+
   schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
   }
 `];
 
-export const resolvers = {
+const resolvers = {
   Query: {
     tags(root, { type }, context) {
       return Tags.getTags(type);
@@ -34,7 +43,21 @@ export const resolvers = {
   Mutation: {
     addTag(root, { type, label }, context) {
       console.log(`adding ${type} tag '${label}'`);
-      return Tags.addTag(type, label);
+      const newTag = Tags.addTag(type, label);
+      pubsub.publish('tagAdded', newTag);
+      return newTag;
+    },
+  },
+  Subscription: {
+    tagAdded(tag) {
+      return tag;
     },
   },
 };
+
+const jsSchema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});
+
+export default jsSchema;
