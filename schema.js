@@ -41,9 +41,9 @@ const resolvers = {
     },
   },
   Mutation: {
-    addTag(root, { type, label }, context) {
+    addTag: async (root, { type, label }, context) => {
       console.log(`adding ${type} tag '${label}'`);
-      const newTag = Tags.addTag(type, label);
+      const newTag = await Tags.addTag(type, label);
       pubsub.publish('tagAdded', newTag);
       return newTag;
     },
