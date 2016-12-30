@@ -29,7 +29,11 @@ function addTag(type, label) {
 
 export default {
   getTags(type) {
-    return _.filter(tags, tag => tag.type === type);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(_.filter(tags, tag => tag.type === type))
+      }, 2000)
+    })
   },
   getTagsPage(page, pageSize) {
     const start = page * pageSize;
@@ -41,6 +45,9 @@ export default {
   },
   getRandomTag() {
     return tags[Math.round(Math.random()*(tags.length - 1))];
+  },
+  getLastTag() {
+    return tags[tags.length - 1];
   },
   addTag,
 };

@@ -17,9 +17,12 @@ const typeDefs = [`
   }
 
   type Query {
+    hello: String
+    ping(message: String!): String
     tags(type: String!): [Tag]
     tagsPage(page: Int!, size: Int!): TagsPage
     randomTag: Tag
+    lastTag: Tag
   }
 
   type Mutation {
@@ -39,6 +42,12 @@ const typeDefs = [`
 
 const resolvers = {
   Query: {
+    hello(root, args, context) {
+      return "Hello world!";
+    },
+    ping(root, { message }, context) {
+      return `Answering ${message}`;
+    },
     tags(root, { type }, context) {
       return Tags.getTags(type);
     },
@@ -47,6 +56,9 @@ const resolvers = {
     },
     randomTag(root, args, context) {
       return Tags.getRandomTag();
+    },
+    lastTag(root, args, context) {
+      return Tags.getLastTag();
     },
   },
   Mutation: {

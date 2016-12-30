@@ -10,7 +10,7 @@ import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 
-const PORT = 3000;
+const PORT = 3020;
 const WS_PORT = 3030;
 
 var app = express();
