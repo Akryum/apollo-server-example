@@ -1,17 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { createServer } from 'http';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 
 // Subs
-import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 
 const PORT = 3020;
-const WS_PORT = 3030;
+const SUBSCRIPTIONS_PATH = '/subscriptions';
 
 var app = express();
 
@@ -26,16 +26,20 @@ app.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
 }));
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+const server = createServer(app)
 
-// Subs
-const websocketServer = createServer((request, response) => {
-  response.writeHead(404);
-  response.end();
+server.listen(PORT, () => {
+  console.log(`API Server is now running on http://localhost:${PORT}/graphql`)
+  console.log(`API Subscriptions server is now running on ws://localhost:${PORT}${SUBSCRIPTIONS_PATH}`)
 });
 
-websocketServer.listen(WS_PORT, () => console.log(`Websocket server listening on ${WS_PORT}`));
-
-new SubscriptionServer({
-  subscriptionManager,
-}, websocketServer);
+// Subs
+new SubscriptionServer(
+  {
+    subscriptionManager,
+  },
+  {
+    path: SUBSCRIPTIONS_PATH,
+    server,
+  }
+);
