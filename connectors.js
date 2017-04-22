@@ -27,21 +27,27 @@ function addTag(type, label) {
   });
 }
 
+function fakeDelay (cb) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(cb())
+    }, 2000)
+  })
+}
+
 export default {
   getTags(type) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(_.filter(tags, tag => tag.type === type))
-      }, 2000)
-    })
+    return fakeDelay(() => _.filter(tags, tag => tag.type === type))
   },
   getTagsPage(page, pageSize) {
-    const start = page * pageSize;
-    const end = start + pageSize;
-    return {
-      tags: tags.slice(start, end),
-      hasMore: end < tags.length,
-    };
+    return fakeDelay(() => {
+      const start = page * pageSize;
+      const end = start + pageSize;
+      return {
+        tags: tags.slice(start, end),
+        hasMore: end < tags.length,
+      };
+    })
   },
   getRandomTag() {
     return tags[Math.round(Math.random()*(tags.length - 1))];
