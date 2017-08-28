@@ -1,8 +1,11 @@
-
 import { makeExecutableSchema } from 'graphql-tools';
 
 import Tags from './connectors';
-import { pubsub } from './subscriptions';
+import { PubSub, withFilter } from 'graphql-subscriptions';
+
+const pubsub = new PubSub();
+
+const TAGS_CHANGED_TOPIC = 'tags_changed'
 
 const typeDefs = [`
   type Tag {
@@ -65,14 +68,17 @@ const resolvers = {
     addTag: async (root, { type, label }, context) => {
       console.log(`adding ${type} tag '${label}'`);
       const newTag = await Tags.addTag(type, label);
-      pubsub.publish('tagAdded', newTag);
+      pubsub.publish(TAGS_CHANGED_TOPIC, { tagAdded: newTag });
       return newTag;
     },
   },
   Subscription: {
-    tagAdded(tag) {
-      return tag;
-    },
+    tagAdded: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(TAGS_CHANGED_TOPIC),
+        (payload, variables) => payload.tagAdded.type === variables.type,
+      ),
+    }
   },
 };
 

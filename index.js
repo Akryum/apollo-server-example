@@ -5,8 +5,8 @@ import { createServer } from 'http';
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 
 // Subs
+import { execute, subscribe } from 'graphql'
 import { SubscriptionServer } from 'subscriptions-transport-ws';
-import { subscriptionManager } from './subscriptions';
 
 import schema from './schema';
 
@@ -34,12 +34,14 @@ server.listen(PORT, () => {
 });
 
 // Subs
-new SubscriptionServer(
+SubscriptionServer.create(
   {
-    subscriptionManager,
+    schema,
+    execute,
+    subscribe,
   },
   {
-    path: SUBSCRIPTIONS_PATH,
     server,
+    path: SUBSCRIPTIONS_PATH,
   }
 );
